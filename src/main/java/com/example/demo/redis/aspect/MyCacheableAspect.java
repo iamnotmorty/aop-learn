@@ -45,19 +45,19 @@ public class MyCacheableAspect {
 
     @Around("@annotation(myCacheable)")
     public Object myCacheAround(ProceedingJoinPoint pjp, MyCacheable myCacheable) throws Throwable {
-        logger.info("getThis()===>{}", pjp.getThis());
-        logger.info("getTarget()===>{}", pjp.getTarget());
-        logger.info("getArgs()===>{}", pjp.getArgs());
-        logger.info("getKind()===>{}", pjp.getKind());
-        logger.info("getSignature()===>{}", pjp.getSignature());
-        logger.info("getSignature().getDeclaringTypeName()===>{}", pjp.getSignature().getDeclaringTypeName());
-        logger.info("getSignature().getDeclaringType()===>{}", pjp.getSignature().getDeclaringType());
-        logger.info("getSignature().getName()===>{}", pjp.getSignature().getName());
-        logger.info("getSignature().getModifiers()===>{}", pjp.getSignature().getModifiers());
-        logger.info("getSourceLocation()===>{}", pjp.getSourceLocation());
+//        logger.info("getThis()===>{}", pjp.getThis());
+//        logger.info("getTarget()===>{}", pjp.getTarget());
+//        logger.info("getArgs()===>{}", pjp.getArgs());
+//        logger.info("getKind()===>{}", pjp.getKind());
+//        logger.info("getSignature()===>{}", pjp.getSignature());
+//        logger.info("getSignature().getDeclaringTypeName()===>{}", pjp.getSignature().getDeclaringTypeName());
+//        logger.info("getSignature().getDeclaringType()===>{}", pjp.getSignature().getDeclaringType());
+//        logger.info("getSignature().getName()===>{}", pjp.getSignature().getName());
+//        logger.info("getSignature().getModifiers()===>{}", pjp.getSignature().getModifiers());
+//        logger.info("getSourceLocation()===>{}", pjp.getSourceLocation());
         //logger.info("getSourceLocation()#getFileName===>{}", pjp.getSourceLocation().getFileName());
         //logger.info("getSourceLocation()#getLine===>{}", pjp.getSourceLocation().getLine());
-        logger.info("getSourceLocation()#getWithinType===>{}", pjp.getSourceLocation().getWithinType());
+        //logger.info("getSourceLocation()#getWithinType===>{}", pjp.getSourceLocation().getWithinType());
         if (!myCacheable.cacheable()) {
             return pjp.proceed();
         }

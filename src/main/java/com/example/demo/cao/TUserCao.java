@@ -27,6 +27,7 @@ public class TUserCao {
     private TUserDao tUserDao;
 
     @MyCacheable(value = "DMJUser:tUser", key = "#id", cacheable = true)
+    //@Cacheable(value = "DMJUser:tUser", key = "#id")
     public TUser queryById(Integer id) {
         logger.info("==>从数据库获取ID【" + id + "】的用户");
         TUser tUser = tUserDao.queryById(id);

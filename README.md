@@ -26,7 +26,9 @@
 
 <!-- /TOC -->
 ## 初始化Springboot项目
-初始化这一步Idea直接就可以创建了，添加web，Mysql，MyBatis依赖，这一步可以直接在创建项目的时候就可以勾选，也可以等到项目创建完成后手动添加。一般我们还会用到数据库连接池，所以还要添加 druid 依赖。
+初始化这一步 Idea 直接就可以创建了，添加 web ，Mysql ，MyBatis 依赖，
+这一步可以直接在创建项目的时候就可以勾选，也可以等到项目创建完成后手动添加。
+一般我们还会用到数据库连接池，所以还要添加 druid 依赖。
 > 注： 我这里的SpringBoot版本是 2.1.6.RELEASE
 ### 数据库相关依赖
 pom.xml部分内容如下
@@ -54,7 +56,8 @@ pom.xml部分内容如下
     </dependency> 
 </dependencies>           
 ```
-我比较喜欢用MyBatis，虽然有些人说JAP更加面向对象，但是我只能说还是喜欢MyBatis的简单。你用JAP写个复杂查询试试，还是很麻烦的。
+我比较喜欢用 MyBatis ，虽然有些人说 JAP 更加面向对象，但是我只能说还是喜欢 MyBatis 的简单。
+你用 JAP 写个复杂查询试试，还是很麻烦的。
 ### 数据库相关配置
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/dmj_user
@@ -63,7 +66,7 @@ spring.datasource.password=123456
 ```
 没错，只要求可用做实验用这个配置就够了，其他的配置按需求添加吧。
 
-MyBatis的配置只需要设置一个xml文件所在的位置就可以了。
+MyBatis 的配置只需要设置一个 xml 文件所在的位置就可以了。
 ```properties
 mybatis.mapper-locations=classpath:mapper/*.xml
 ```
@@ -71,8 +74,8 @@ mybatis.mapper-locations=classpath:mapper/*.xml
 ***
 ## 使用Redis实现缓存
 Redis 相关的东西就不在这里多说了。
-至于MySQL和Redis的版本，个人觉得既然是学习，那就用最新的吧。
-我用 Docker Desktop for Windows 来安装 MySQL8.0和Redis6.0。
+至于 MySQL 和 Redis 的版本，个人觉得既然是学习，那就用最新的吧。
+我用 Docker Desktop for Windows 来安装 MySQL8.0 和 Redis6.0 。
 Docker怎么用这里也不多说了，不是相关的重点。
 ### 添加依赖
 ```xml
@@ -81,19 +84,78 @@ Docker怎么用这里也不多说了，不是相关的重点。
     <artifactId>spring-boot-starter-data-redis</artifactId>
 </dependency>
 ```
-" version "就不需要加了，因为是一个spring-boot-starter，所以跟随SpringBoot的版本就好。
+" version "就不需要加了，因为是一个 spring-boot-starter，所以跟随 SpringBoot 的版本就好。
 
 ### 添加配置
 关于配置这里还想多说几句，去搜索配置相关的文章，一搜一堆，单个人觉得很多都是到处复制来，
 说白了很多人跑没跑起来都不知道，直接就把一堆配置抛出来了。个人建议先用最简配置，等需要时
 再逐渐添加。就比如前面数据库连接池的配置，简简单单就好，你就跑一个接口，查一张表的信息，
 你搞这么多配置晕不晕，关键还整不明白配置的作用，何必呢。
+```properties
+spring.redis.host=127.0.0.1
+spring.redis.password=
+spring.redis.port=6379
+```
+就这么点配置就可以跑起来了，其他的不写会自动使用默认的配置。还是那句话先跑起来，有需要再加。
+一般来说官方文档给的配置基本都是最简配置，参照即可，所以官方文档还是要去看。
 ### 注解 @EnableCaching
+@EnableCaching 直接加到 Application 上，放到 @SpringBootApplication 下面就好了。
 ### 注解 @Cacheable、@CacheEvict
+@Cacheable ： 缓存注解
+@CacheEvict ： 清除缓存
 ***
 ## 自定义缓存注解
+Spring 提供的 @Cacheable 所提供的功能虽然已经有很多功能了，但是举一个最简单的例子，
+我需要自定义缓存过期时间。这样 @Cacheable 就没办法提供给你了。由此我们可以自定义一个
+注解，满足自己的业务需求。
 ### 自定义 @MyCacheable 注解
+创建一个 @MyCacheable , 目前我们先简单的定义一个。满足最基本的需求，缓存。
+```java
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface MyCacheable {
+    String value() default "";
+
+    String key() default "";
+}
+```
+没错，只需要这两个就可以了，实现基本的缓存我们只需要 value 和 key。
 ### 基于 @Aspect 注解的缓存实现
+创建一个 Aspect 来处理 @MyCacheable 标记的业务处理类的某个方法。
+```java
+@Component
+@Aspect
+public class MyCacheableAspect {
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    CacheManager cacheManager;
+
+    @Autowired
+    private ThreadPoolTaskExecutor taskExecutor;
+
+    @Around("@annotation(myCacheable)")
+    public Object myCacheAround(ProceedingJoinPoint pjp, MyCacheable myCacheable) throws Throwable {
+        String  key = parseSpelToString(pjp,myCacheable.key());
+        String cacheName = myCacheable.value();
+
+        Cache cache = cacheManager.getCache(cacheName);
+        Cache.ValueWrapper wrapper = cache.get(key);
+        if (wrapper == null) {
+            logger.info("缓存匹配无效，数据库查询");
+            cache.put(key, pjp.proceed());
+            logger.info("缓存成功==>读取缓存...");
+            return cache.get(key).get();
+        }
+
+        logger.info("命中缓存：" + wrapper.get());
+        logger.info("读取缓存【{}】", wrapper.get());
+
+        return wrapper.get();
+    }
+}
+```
 ***
 ## AOP的深入研究
 ### AOP相关名词
