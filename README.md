@@ -154,8 +154,38 @@ public class MyCacheableAspect {
 
         return wrapper.get();
     }
+
+    /**
+     * SpEl 表达式解释成字符串
+     * @param point 切入对象
+     * @param spel spel 表达式
+     * @return
+     */
+    public String parseSpelToString(ProceedingJoinPoint point,String spel){
+        if(spel != null){
+            LocalVariableTableParameterNameDiscoverer discoverer = new LocalVariableTableParameterNameDiscoverer();
+            Method method = ((MethodSignature) point.getSignature()).getMethod();
+            EvaluationContext context = new StandardEvaluationContext();
+            String[] params = discoverer.getParameterNames(method);
+            Object[] args = point.getArgs();
+            for (int len = 0; len < params.length; len++) {
+                context.setVariable(params[len], args[len]);
+            }
+
+            SpelExpressionParser spelExpressionParser = new SpelExpressionParser();
+            SpelExpression spelExpression = spelExpressionParser.parseRaw(spel);
+            return spelExpression.getValue(context,String.class);
+        }
+        return "";
+    }
 }
 ```
+这个类以上的代码已经是很简单了，直接就能用的。两个方法：
+1. MyCacheableAspect#myCacheableAround() 注解 @MyCacheable 标记的方法的环绕增强，
+用于处理获取缓存和插入缓存逻辑。
+2. MyCacheableAspect#parseSpelToString() 该方法用于解析 spel 表达式为字符串。用来
+将设定的 例如 key = "#id" 解析成传入 id 字符串。这个方法没什么难懂的，就是几个类，
+作用都很明显。
 ***
 ## AOP的深入研究
 ### AOP相关名词

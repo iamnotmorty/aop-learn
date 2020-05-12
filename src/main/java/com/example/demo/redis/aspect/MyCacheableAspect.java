@@ -58,6 +58,9 @@ public class MyCacheableAspect {
         //logger.info("getSourceLocation()#getFileName===>{}", pjp.getSourceLocation().getFileName());
         //logger.info("getSourceLocation()#getLine===>{}", pjp.getSourceLocation().getLine());
         //logger.info("getSourceLocation()#getWithinType===>{}", pjp.getSourceLocation().getWithinType());
+
+        Object[] objs = pjp.getArgs();
+        logger.info("objs =====> {}", objs);
         if (!myCacheable.cacheable()) {
             return pjp.proceed();
         }
