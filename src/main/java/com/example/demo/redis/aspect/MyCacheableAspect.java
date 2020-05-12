@@ -61,6 +61,12 @@ public class MyCacheableAspect {
 
         Object[] objs = pjp.getArgs();
         logger.info("objs =====> {}", objs);
+
+        Object target = pjp.getTarget();
+        logger.info("Target =====> {}", target);
+        Object proxy = pjp.getThis();
+        logger.info("Proxy =====> {}", proxy);
+        logger.info("Proxy = Target =====> {}", proxy.equals(target));
         if (!myCacheable.cacheable()) {
             return pjp.proceed();
         }
