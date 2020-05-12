@@ -188,7 +188,24 @@ public class MyCacheableAspect {
 作用都很明显。
 ***
 ## AOP的深入研究
+> 在软件业，AOP为Aspect Oriented Programming的缩写，意为：面向切面编程，
+>通过预编译方式和运行期间动态代理实现程序功能的统一维护的一种技术。AOP是OOP
+>的延续，是软件开发中的一个热点，也是Spring框架中的一个重要内容，是函数式编程
+>的一种衍生范型。利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各
+>部分之间的耦合度降低，提高程序的可重用性，同时提高了开发的效率。———— 百度百科
 ### AOP相关名词
+JoinPoint 连接点
+Pointcut 切点
+Advice 增强
+Adviser 切面
+Weaving 织入
+Introduction 引入
+
+Before Advice 前置增强
+After Advice 后置增强
+Around Advice 环绕增强
+Throws Advice 抛出增强
+Introduction Advice 引入增强
 ### Spring AOP
 ### AspectJ
 ***
@@ -197,6 +214,10 @@ public class MyCacheableAspect {
 这种模式增加了客户端调用目标方法的间接性，正是这种间接性提供了在目标方法调用前后增加处理逻辑的空间。
 > 注: 后续会用到Target（目标/委托类），Proxy（代理）
 ### 静态代理
+代理类和委托类需要实现同一个接口（必须），代理类持有委托类的引用，在代理类调用目标方法时可以添加
+增强处理（相当与手动织入），在客户端表现为，调用代理类的委托类的同名方法。直接代码层面的编写，局限性大。
 ### 动态代理
 #### JDK动态代理
 #### CGLib动态代理
+#### Aspect动态代理
+#### Instrumentation动态代理
