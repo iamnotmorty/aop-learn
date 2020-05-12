@@ -30,6 +30,9 @@
 这一步可以直接在创建项目的时候就可以勾选，也可以等到项目创建完成后手动添加。
 一般我们还会用到数据库连接池，所以还要添加 druid 依赖。
 > 注： 我这里的SpringBoot版本是 2.1.6.RELEASE
+
+这里给出连接可以参考，注意 MySQL 和 Redis 都是在 Docker 容器里安装启动的。
+[安装Docker](https://www.runoob.com/docker/windows-docker-install.html) | [安装MySQL](https://www.runoob.com/docker/docker-install-mysql.html) | [安装Redis](https://www.runoob.com/docker/docker-install-redis.html)  
 ### 数据库相关依赖
 pom.xml部分内容如下
 ```xml
@@ -122,6 +125,10 @@ public @interface MyCacheable {
 ```
 没错，只需要这两个就可以了，实现基本的缓存我们只需要 value 和 key。
 ### 基于 @Aspect 注解的缓存实现
+啥？你问我配置文件的方式怎么实现。不好意思，懒得写也不会，都2020年了，
+springboot 的理念就是约定大于配置，引入包。一个 @Aspect 开干就完了。
+好了，开个玩笑，这里的目的就是快速实现自定义缓存注解，赶紧先动起来，成功实现了再说。
+至于 Spring AOP 后面内容会讲，这么讲的原因还是一个理念，先实践，再刨根问底。
 创建一个 Aspect 来处理 @MyCacheable 标记的业务处理类的某个方法。
 ```java
 @Component
@@ -193,6 +200,11 @@ public class MyCacheableAspect {
 >的延续，是软件开发中的一个热点，也是Spring框架中的一个重要内容，是函数式编程
 >的一种衍生范型。利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各
 >部分之间的耦合度降低，提高程序的可重用性，同时提高了开发的效率。———— 百度百科
+### AOP使用场景
+Authentication（权限）、Caching（缓存）、Context passing（内容传递）、Error handling（错误处理）、
+Lazy loading（懒加载）、Debugging（调试）、logging（记录）、tracing（跟踪）、profiling（优化）、
+monitoring（校准）、Performance optimization（性能优化）、Persistence（持久化）、Resource pooling（资源池）、
+Synchronization（同步）、Transactions（事务）
 ### AOP相关名词
 JoinPoint 连接点
 Pointcut 切点
