@@ -104,3 +104,120 @@ spring.redis.port=6379
 @Cacheable ： 缓存注解
 @CacheEvict ： 清除缓存
 ***
+## 自定义缓存注解
+Spring 提供的 @Cacheable 所提供的功能虽然已经有很多功能了，但是举一个最简单的例子，
+我需要自定义缓存过期时间。这样 @Cacheable 就没办法提供给你了。由此我们可以自定义一个
+注解，满足自己的业务需求。
+### 自定义 @MyCacheable 注解
+创建一个 @MyCacheable , 目前我们先简单的定义一个。满足最基本的需求，缓存。
+```java
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface MyCacheable {
+    String value() default "";
+
+    String key() default "";
+}
+```
+没错，只需要这两个就可以了，实现基本的缓存我们只需要 value 和 key。
+### 基于 @Aspect 注解的缓存实现
+创建一个 Aspect 来处理 @MyCacheable 标记的业务处理类的某个方法。
+```java
+@Component
+@Aspect
+public class MyCacheableAspect {
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    CacheManager cacheManager;
+
+    @Autowired
+    private ThreadPoolTaskExecutor taskExecutor;
+
+    @Around("@annotation(myCacheable)")
+    public Object myCacheAround(ProceedingJoinPoint pjp, MyCacheable myCacheable) throws Throwable {
+        String  key = parseSpelToString(pjp,myCacheable.key());
+        String cacheName = myCacheable.value();
+
+        Cache cache = cacheManager.getCache(cacheName);
+        Cache.ValueWrapper wrapper = cache.get(key);
+        if (wrapper == null) {
+            logger.info("缓存匹配无效，数据库查询");
+            cache.put(key, pjp.proceed());
+            logger.info("缓存成功==>读取缓存...");
+            return cache.get(key).get();
+        }
+
+        logger.info("命中缓存：" + wrapper.get());
+        logger.info("读取缓存【{}】", wrapper.get());
+
+        return wrapper.get();
+    }
+
+    /**
+     * SpEl 表达式解释成字符串
+     * @param point 切入对象
+     * @param spel spel 表达式
+     * @return
+     */
+    public String parseSpelToString(ProceedingJoinPoint point,String spel){
+        if(spel != null){
+            LocalVariableTableParameterNameDiscoverer discoverer = new LocalVariableTableParameterNameDiscoverer();
+            Method method = ((MethodSignature) point.getSignature()).getMethod();
+            EvaluationContext context = new StandardEvaluationContext();
+            String[] params = discoverer.getParameterNames(method);
+            Object[] args = point.getArgs();
+            for (int len = 0; len < params.length; len++) {
+                context.setVariable(params[len], args[len]);
+            }
+
+            SpelExpressionParser spelExpressionParser = new SpelExpressionParser();
+            SpelExpression spelExpression = spelExpressionParser.parseRaw(spel);
+            return spelExpression.getValue(context,String.class);
+        }
+        return "";
+    }
+}
+```
+这个类以上的代码已经是很简单了，直接就能用的。两个方法：
+1. MyCacheableAspect#myCacheableAround() 注解 @MyCacheable 标记的方法的环绕增强，
+用于处理获取缓存和插入缓存逻辑。
+2. MyCacheableAspect#parseSpelToString() 该方法用于解析 spel 表达式为字符串。用来
+将设定的 例如 key = "#id" 解析成传入 id 字符串。这个方法没什么难懂的，就是几个类，
+作用都很明显。
+***
+## AOP的深入研究
+> 在软件业，AOP为Aspect Oriented Programming的缩写，意为：面向切面编程，
+>通过预编译方式和运行期间动态代理实现程序功能的统一维护的一种技术。AOP是OOP
+>的延续，是软件开发中的一个热点，也是Spring框架中的一个重要内容，是函数式编程
+>的一种衍生范型。利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各
+>部分之间的耦合度降低，提高程序的可重用性，同时提高了开发的效率。———— 百度百科
+### AOP相关名词
+JoinPoint 连接点
+Pointcut 切点
+Advice 增强
+Adviser 切面
+Weaving 织入
+Introduction 引入
+
+Before Advice 前置增强
+After Advice 后置增强
+Around Advice 环绕增强
+Throws Advice 抛出增强
+Introduction Advice 引入增强
+### Spring AOP
+### AspectJ
+***
+## 代理模式
+代理类代理委托类，客户端不直接调用委托类的目标方法，而是通过代理类间接的调用目标方法。
+这种模式增加了客户端调用目标方法的间接性，正是这种间接性提供了在目标方法调用前后增加处理逻辑的空间。
+> 注: 后续会用到Target（目标/委托类），Proxy（代理）
+### 静态代理
+代理类和委托类需要实现同一个接口（必须），代理类持有委托类的引用，在代理类调用目标方法时可以添加
+增强处理（相当与手动织入），在客户端表现为，调用代理类的委托类的同名方法。直接代码层面的编写，局限性大。
+### 动态代理
+#### JDK动态代理
+#### CGLib动态代理
+#### Aspect动态代理
+#### Instrumentation动态代理
