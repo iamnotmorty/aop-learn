@@ -207,17 +207,74 @@ monitoring（校准）、Performance optimization（性能优化）、Persistenc
 Synchronization（同步）、Transactions（事务）
 ### AOP相关名词
 JoinPoint 连接点
+
 Pointcut 切点
+
 Advice 增强
+
 Adviser 切面
+
 Weaving 织入
+
 Introduction 引入
 
 Before Advice 前置增强
+
 After Advice 后置增强
+
 Around Advice 环绕增强
+
 Throws Advice 抛出增强
+
 Introduction Advice 引入增强
+### AOP实现
+现在有了 SpringBoot 这个神器， 真的越来越简单了。不用像以前那样配置来配置去的，也不用加那么多包，
+直接一个 spring-boot-starter-aop 就搞定。
+#### 关键的注解
+@Aspect：标注这个类是一个切面
+
+@Pointcut：定义切点
+
+@Around：环绕增强
+
+@Before：在切入点方法执行之前执行我们定义的advice。
+
+@After：在切入点方法执行之后执行我们定义的advice
+
+@AfterReturning：目标方法完成后织入，比起 @After 还多一个 returning 属性，目标方法的返回对象。
+
+@AfterThrowing：异常抛出增强，在异常抛出后织入的增强。有点像上面的@AfterReturning，这个注解也是有两个属性，pointcut和throwing。
+#### 增强注解的 pointcut 属性
+pointcut 属性可以这么多定义方式，前面在自定义注解的时候用到了 @annotation ，也就是我们使用注解的地方。
+
+execution: 匹配连接点
+
+within: 某个类里面
+
+this: 指定AOP代理类的类型
+
+target:指定目标对象的类型
+
+args: 指定参数的类型
+
+bean:指定特定的bean名称，可以使用通配符（Spring自带的）
+
+@target： 带有指定注解的类型
+
+@args: 指定运行时传的参数带有指定的注解
+
+@within: 匹配使用指定注解的类
+
+@annotation:指定方法所应用的注解
+
+我们重点讲一下 execution ，这个相对用的比较多。
+> execution(方法修饰符（可选） 返回类型（必须） 类路径（可选） 方法名（必须） 参数（必须） 异常模式（可选）)
+
+例如：execution(* com.example.demo.cao.TUserCao.queryById(*))
+
+            返回类型        类路径                方法名   参数
+
+> 注：要知道处理参数的一个*，其他出现 * ，表示所有。"com.example.demo.cao..*." 一般用在类路径，表示cao包和它的子包下的方法
 ### Spring AOP
 ### AspectJ
 ***
