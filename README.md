@@ -285,6 +285,49 @@ bean:指定特定的bean名称，可以使用通配符（Spring自带的）
 ### 静态代理
 代理类和委托类需要实现同一个接口（必须），代理类持有委托类的引用，在代理类调用目标方法时可以添加
 增强处理（相当与手动织入），在客户端表现为，调用代理类的委托类的同名方法。直接代码层面的编写，局限性大。
+> 实现比较简单。代码如下
+```java
+//接口
+public interface Target {
+    void doSomething();
+}
+//实现类（目标类）
+public class TargetImpl implements Target {
+    @Override
+    public void doSomething() {
+        System.out.println("target do something!!!");
+    }
+}
+//代理类
+public class TargetProxy implements Target {
+    private Target baseObject;
+
+    public TargetProxy(Target baseObject) {
+        this.baseObject = baseObject;
+    }
+
+    @Override
+    public void doSomething(){
+        System.out.println("before method");
+        baseObject.doSomething();
+        System.out.println("after method");
+    }
+}
+
+//测试
+public class TargetMain {
+    public static void main(String[] args) {
+        executeMethod();
+    }
+
+    public static void executeMethod() {
+        Target target =  new TargetImpl();
+        TargetProxy targetProxy = new TargetProxy(target);
+        targetProxy.doSomething();
+    }
+}
+```
+刚入门的同学可能觉得不好理解，没关系，其实到后面看起来真的很简单，甚至会觉得这种方式很“弱智”。
 ### 动态代理
 #### JDK动态代理
 #### CGLib动态代理
