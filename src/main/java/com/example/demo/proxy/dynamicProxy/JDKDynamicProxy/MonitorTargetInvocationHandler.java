@@ -45,7 +45,7 @@ public class MonitorTargetInvocationHandler<T> implements InvocationHandler {
         // 代理过程中插入监测方法,计算该方法耗时
         MonitorUtil.start();
         Thread.sleep(1);
-        // 调用呗代理对象的真实方法
+        // 调用被代理对象的真实方法
         Object result = method.invoke(target, args);
         MonitorUtil.finish(method.getName());
         return result;
