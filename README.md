@@ -453,7 +453,111 @@ InvocationHandler。每一个代理的实例都会有一个关联的调用处理
 
 在测试类里调用了 MonitorTargetInvocationHandler.getProxy(Class<?> interfaceClazz, Object target) 这个静态方
 法获取代理类。这个方法里封装了 Proxy.newProxyInstance(ClassLoader loader, Class<?>[] interfaces, InvocationHandler h) 
-从方法名可以很直观的看出，创建一个代理实例。
+从方法名可以很直观的看出，创建一个代理实例。接下来我们来读读这个方法的源码。
+```java
+public class Proxy implements java.io.Serializable {
+    /**
+     * Returns an instance of a proxy class for the specified interfaces
+     * that dispatches method invocations to the specified invocation
+     * handler.
+     * 返回指定接口的代理类实例，它会将方法调用分派到指定的调用处理(InvocationHandler)
+     *
+     * <p>{@code Proxy.newProxyInstance} throws
+     * {@code IllegalArgumentException} for the same reasons that
+     * {@code Proxy.getProxyClass} does.
+     *
+     * @param   loader the class loader to define the proxy class 限定代理类的类加载器
+     * @param   interfaces the list of interfaces for the proxy class
+     *          to implement 代理类要实现的接口数组
+     * @param   h the invocation handler to dispatch method invocations to 调用处理，将代理类的方法调用分派给他
+     * @return  a proxy instance with the specified invocation handler of a
+     *          proxy class that is defined by the specified class loader
+     *          and that implements the specified interfaces
+     * @throws  IllegalArgumentException if any of the restrictions on the
+     *          parameters that may be passed to {@code getProxyClass}
+     *          are violated
+     * @throws  SecurityException if a security manager, <em>s</em>, is present
+     *          and any of the following conditions is met:
+     *          <ul>
+     *          <li> the given {@code loader} is {@code null} and
+     *               the caller's class loader is not {@code null} and the
+     *               invocation of {@link SecurityManager#checkPermission
+     *               s.checkPermission} with
+     *               {@code RuntimePermission("getClassLoader")} permission
+     *               denies access;</li>
+     *          <li> for each proxy interface, {@code intf},
+     *               the caller's class loader is not the same as or an
+     *               ancestor of the class loader for {@code intf} and
+     *               invocation of {@link SecurityManager#checkPackageAccess
+     *               s.checkPackageAccess()} denies access to {@code intf};</li>
+     *          <li> any of the given proxy interfaces is non-public and the
+     *               caller class is not in the same {@linkplain Package runtime package}
+     *               as the non-public interface and the invocation of
+     *               {@link SecurityManager#checkPermission s.checkPermission} with
+     *               {@code ReflectPermission("newProxyInPackage.{package name}")}
+     *               permission denies access.</li>
+     *          </ul>
+     * @throws  NullPointerException if the {@code interfaces} array
+     *          argument or any of its elements are {@code null}, or
+     *          if the invocation handler, {@code h}, is
+     *          {@code null}
+     */
+    @CallerSensitive
+    public static Object newProxyInstance(ClassLoader loader,
+                                          Class<?>[] interfaces,
+                                          InvocationHandler h)
+        throws IllegalArgumentException
+    {
+        // 校验 h 是否为 null，是则抛出 NPE
+        Objects.requireNonNull(h);
+        
+        // 复制一份 interfaces 声明为 final
+        final Class<?>[] intfs = interfaces.clone();
+        // 获取 Java安全管理器
+        final SecurityManager sm = System.getSecurityManager();
+        if (sm != null) {
+            checkProxyAccess(Reflection.getCallerClass(), loader, intfs);
+        }
+
+        /*
+         * Look up or generate the designated proxy class.
+         */
+        Class<?> cl = getProxyClass0(loader, intfs);
+
+        /*
+         * Invoke its constructor with the designated invocation handler.
+         */
+        try {
+            if (sm != null) {
+                checkNewProxyPermission(Reflection.getCallerClass(), cl);
+            }
+
+            final Constructor<?> cons = cl.getConstructor(constructorParams);
+            final InvocationHandler ih = h;
+            if (!Modifier.isPublic(cl.getModifiers())) {
+                AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                    public Void run() {
+                        cons.setAccessible(true);
+                        return null;
+                    }
+                });
+            }
+            return cons.newInstance(new Object[]{h});
+        } catch (IllegalAccessException|InstantiationException e) {
+            throw new InternalError(e.toString(), e);
+        } catch (InvocationTargetException e) {
+            Throwable t = e.getCause();
+            if (t instanceof RuntimeException) {
+                throw (RuntimeException) t;
+            } else {
+                throw new InternalError(t.toString(), t);
+            }
+        } catch (NoSuchMethodException e) {
+            throw new InternalError(e.toString(), e);
+        }
+    }
+}
+```
 
 
 
