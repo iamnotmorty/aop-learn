@@ -52,8 +52,8 @@ public class MonitorTargetInvocationHandler<T> implements InvocationHandler {
         return result;
     }
 
-    public static Object proxy(Class<?> interfaceClazz, Object proxy) {
+    public static Object getProxy(Class<?> interfaceClazz, Object target) {
         return Proxy.newProxyInstance(interfaceClazz.getClassLoader(), new Class<?>[]{interfaceClazz},
-                new MonitorTargetInvocationHandler<>(proxy));
+                new MonitorTargetInvocationHandler<>(target));
     }
 }

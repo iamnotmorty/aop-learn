@@ -336,6 +336,58 @@ public class TargetMain {
  
  Talk is cheap, show you my code.
 ```java
+/**
+ * 目标接口
+ */
+public interface Person {
+    /**
+     *
+     * @param name
+     * @param dst
+     */
+    void goWorking(String name, String dst);
+    /**
+     * 获取名称
+     * @return
+     */
+    String getName( );
+    /**
+     * 设置名称
+     * @param name
+     */
+    void  setName(String name);
+}
+
+/**
+ * 目标类
+ */
+public class SoftwareEngineer implements Person {
+
+    private String name;
+
+    public SoftwareEngineer(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public void goWorking(String name, String dst) {
+        System.out.println("name ="+name+" ， 去 "+dst +" 工作");
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+
+/**
+ * invocation handler
+ */
 public class MonitorTargetInvocationHandler<T> implements InvocationHandler {
     // 这里用泛型类或者直接使用Object都可以
     T target;
@@ -370,18 +422,38 @@ public class MonitorTargetInvocationHandler<T> implements InvocationHandler {
         return result;
     }
 
-    public static Object proxy(Class<?> interfaceClazz, Object proxy) {
+    public static Object getProxy(Class<?> interfaceClazz, Object target) {
         return Proxy.newProxyInstance(interfaceClazz.getClassLoader(), new Class<?>[]{interfaceClazz},
-                new MonitorTargetInvocationHandler<>(proxy));
+                new MonitorTargetInvocationHandler<>(target));
     }
 }
+
+/**
+ * 测试类
+ */
+public class JDKDynamicProxyTest {
+    public static void main(String[] args) {
+        Person person = new SoftwareEngineer("Vincent");
+        Person personProxy = (Person) MonitorTargetInvocationHandler.getProxy(Person.class, person);
+        System.out.println("package = " + personProxy.getClass().getPackage() + " SimpleName = " + personProxy.getClass().getSimpleName() + " name =" + personProxy.getClass().getName() + " CanonicalName = " + "" + personProxy.getClass().getCanonicalName() + " 实现的接口 Interfaces = " + Arrays.toString(personProxy.getClass().getInterfaces()) + " superClass = " + personProxy.getClass().getSuperclass() + " methods =" + Arrays.toString(personProxy.getClass().getMethods()));
+        // 通过 代理类 执行 委托类的代码逻辑
+        String name = personProxy.getName();
+        personProxy.goWorking(name, "深圳");
+    }
+}
+
 ```
 下面来看分析
 
 可以看到，我们创建的 Handler 实现了 InvocationHandler 接口并实现了 invoke() 方法。其实在JDK动态代理中，核心是
-InvocationHandler。每一个代理的实例都会有一个关联的调用处理程序(InvocationHandler)。对待代理实例进行调用时，
-将对方法的调用进行编码并指派到它的调用处理器(InvocationHandler)的invoke方法。所以对代理对象实例方法的调用都
-是通过InvocationHandler中的invoke方法来完成的，而invoke方法会根据传入的代理对象、方法名称以及参数决定调用代理的哪个方法。
+InvocationHandler。每一个代理的实例都会有一个关联的调用处理程序(InvocationHandler) ，这个处理程序关联了被代理
+对象。对待代理实例进行调用时，将对方法的调用进行编码并指派到它的调用处理器(InvocationHandler)的invoke方法。所以
+对代理对象实例方法的调用都是通过InvocationHandler中的invoke方法来完成的，而invoke方法会根据传入的代理对象、方法
+名称以及参数决定调用代理的哪个方法。
+
+在测试类里调用了 MonitorTargetInvocationHandler.getProxy(Class<?> interfaceClazz, Object target) 这个静态方
+法获取代理类。这个方法里封装了 Proxy.newProxyInstance(ClassLoader loader, Class<?>[] interfaces, InvocationHandler h) 
+从方法名可以很直观的看出，创建一个代理实例。
 
 
 
