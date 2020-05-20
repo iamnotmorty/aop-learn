@@ -44,7 +44,8 @@ public class MonitorTargetInvocationHandler<T> implements InvocationHandler {
                 +" 接口方法入参数组: "+(args ==null ? "null" : Arrays.toString(args)));
         // 代理过程中插入监测方法,计算该方法耗时
         MonitorUtil.start();
-        Thread.sleep(1);
+        // 由于测试例子方法太简单，执行太快。让线程睡眠一段时间，模拟方法调用时间
+        Thread.sleep(100);
         // 调用被代理对象的真实方法
         Object result = method.invoke(target, args);
         MonitorUtil.finish(method.getName());

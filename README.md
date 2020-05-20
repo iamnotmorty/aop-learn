@@ -332,6 +332,59 @@ public class TargetMain {
 说白了就是使用语言特性，改善静态代理需要手动写入代码的不足之处。动态的实现代理，使得拓展更加方便灵活，
 同时在代码的层面降低浸入性，代码职责更加清晰。
 #### JDK动态代理
+> 利用Java反射机制在运行时创建代理类
+ 
+ Talk is cheap, show you my code.
+```java
+public class MonitorTargetInvocationHandler<T> implements InvocationHandler {
+    // 这里用泛型类或者直接使用Object都可以
+    T target;
+
+    public MonitorTargetInvocationHandler(T target) {
+        this.target = target;
+    }
+
+    /**
+     * 在
+     * @param proxy  代表动态生成的 动态代理 对象实例
+     * @param method 代表被调用委托类的接口方法，和生成的代理类实例调用的接口方法是一致的，它对应的Method 实例
+     * @param args   代表调用接口方法对应的Object参数数组，如果接口是无参，则为null； 对于原始数据类型返回的他的包装类型。
+     * @return 返回调用结果 
+     * @throws Throwable 抛出异常
+     */
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
+        // 在转调具体目标对象之前，可以执行一些功能处理
+        System.out.println("被动态代理类回调执行, 代理类 proxyClass ="+proxy.getClass()+" 方法名: " + method.getName() + "方法. 方法返回类型："+method.getReturnType()
+                +" 接口方法入参数组: "+(args ==null ? "null" : Arrays.toString(args)));
+        // 计算该方法耗时 BEGIN
+        // 开始时间
+        long startTime = System.currentTimeMillis();
+        // 调用被代理对象的真实方法
+        Object result = method.invoke(target, args);
+        //结束时间
+        long finishTime = System.currentTimeMillis();
+        // 计算该方法耗时 END
+        System.out.println(method.getName() + "方法执行耗时" + (finishTime - startTime + "ms");
+        return result;
+    }
+
+    public static Object proxy(Class<?> interfaceClazz, Object proxy) {
+        return Proxy.newProxyInstance(interfaceClazz.getClassLoader(), new Class<?>[]{interfaceClazz},
+                new MonitorTargetInvocationHandler<>(proxy));
+    }
+}
+```
+下面来看分析
+
+可以看到，我们创建的 Handler 实现了 InvocationHandler 接口并实现了 invoke() 方法。其实在JDK动态代理中，核心是
+InvocationHandler。每一个代理的实例都会有一个关联的调用处理程序(InvocationHandler)。对待代理实例进行调用时，
+将对方法的调用进行编码并指派到它的调用处理器(InvocationHandler)的invoke方法。所以对代理对象实例方法的调用都
+是通过InvocationHandler中的invoke方法来完成的，而invoke方法会根据传入的代理对象、方法名称以及参数决定调用代理的哪个方法。
+
+
+
 #### CGLib动态代理
 #### Aspect动态代理
 #### Instrumentation动态代理
