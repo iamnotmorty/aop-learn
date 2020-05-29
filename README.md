@@ -65,7 +65,7 @@ pom.xml部分内容如下
     </dependency> 
 </dependencies>           
 ```
-我比较喜欢用 MyBatis ，虽然有些人说 JAP 更加面向对象，但是我只能说还是喜欢 MyBatis 的简单。
+❤ 我比较喜欢用 MyBatis ，虽然有些人说 JAP 更加面向对象，但是我只能说还是喜欢 MyBatis 的简单。
 你用 JAP 写个复杂查询试试，还是很麻烦的。
 ### 数据库相关配置
 ```properties
