@@ -624,7 +624,7 @@ public class CGLibMethodInterceptor implements MethodInterceptor {
         long startTime = System.currentTimeMillis();
         // 调用被代理对象的真实方法
         Object result = methodProxy.invokeSuper(o, objects);
-        //结束时间
+        // 结束时间
         long finishTime = System.currentTimeMillis();
         System.out.println("after");
         System.out.println(method.getName() + "方法执行耗时" + (finishTime - startTime + "ms");
