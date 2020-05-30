@@ -524,6 +524,8 @@ public class Proxy implements java.io.Serializable {
         // 获取 Java安全管理器
         final SecurityManager sm = System.getSecurityManager();
         if (sm != null) {
+            // Check permissions required to create a Proxy class.
+            // 检查创建代理类所需的权限
             checkProxyAccess(Reflection.getCallerClass(), loader, intfs);
         }
 
@@ -535,9 +537,11 @@ public class Proxy implements java.io.Serializable {
 
         /*
          * Invoke its constructor with the designated invocation handler.
+         * 调用构造器生成指定的应用处理类
          */
         try {
             if (sm != null) {
+                // 检查创建代理类所需的权限
                 checkNewProxyPermission(Reflection.getCallerClass(), cl);
             }
 
