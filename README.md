@@ -547,6 +547,7 @@ public class Proxy implements java.io.Serializable {
 
             final Constructor<?> cons = cl.getConstructor(constructorParams);
             final InvocationHandler ih = h;
+            // 若类标识符不为 public 则返回空
             if (!Modifier.isPublic(cl.getModifiers())) {
                 AccessController.doPrivileged(new PrivilegedAction<Void>() {
                     public Void run() {
@@ -555,7 +556,9 @@ public class Proxy implements java.io.Serializable {
                     }
                 });
             }
+            // 返回一个包含指定处理程序数组的实例
             return cons.newInstance(new Object[]{h});
+        // 抛出一些异常
         } catch (IllegalAccessException|InstantiationException e) {
             throw new InternalError(e.toString(), e);
         } catch (InvocationTargetException e) {
