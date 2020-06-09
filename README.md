@@ -207,7 +207,8 @@ public class MyCacheableAspect {
 >通过预编译方式和运行期间动态代理实现程序功能的统一维护的一种技术。AOP是OOP
 >的延续，是软件开发中的一个热点，也是Spring框架中的一个重要内容，是函数式编程
 >的一种衍生范型。利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各
->部分之间的耦合度降低，提高程序的可重用性，同时提高了开发的效率。———— 百度百科
+>部分之间的耦合度降低，提高程序的可重用性，同时提高了开发的效率。
+
 ### AOP使用场景
 Authentication（权限）、Caching（缓存）、Context passing（内容传递）、Error handling（错误处理）、
 Lazy loading（懒加载）、Debugging（调试）、logging（记录）、tracing（跟踪）、profiling（优化）、
@@ -216,25 +217,49 @@ Synchronization（同步）、Transactions（事务）
 ### AOP相关名词
 JoinPoint 连接点
 
+关于 JoinPoint 连接点的理解就是，我们可以粗略的把 Java程序 看成是一个个方法的调用。在 JVM 的角度就是每一个方法就是
+一个栈帧，方法的调用就是栈帧入栈和出栈的过程。从时间角度看就是一个方法调用链条。放在 AOP 的角度，每一个方法调用就是一个
+连接点 JoinPoint ，因此就可以把 Java程序看成是由一个个连接点和一根垂直的时间轴组成的链条。
+
+Aspect 切面
+
+Aspect 切面我们可以理解为，要对某个方法调用时要增加的处理。从空间角度来说就是横切于连接点链条。所以叫做切面。
+
 Pointcut 切点
+
+切面切入的位置就被叫做切点。
 
 Advice 增强
 
-Adviser 切面
-
-Weaving 织入
-
-Introduction 引入
+可以在切点位置通过切面对目标方法进行增强处理，增强处理有几种如下：
 
 Before Advice 前置增强
 
+方法调用前
+
 After Advice 后置增强
+
+方法调用后
 
 Around Advice 环绕增强
 
+环绕方法，在方法调用前后
+
 Throws Advice 抛出增强
 
+抛出异常后
+
 Introduction Advice 引入增强
+
+Weaving 织入
+
+编译时织入，运行时织入
+
+Introduction 引入
+
+持有引用？待求证
+
+
 ### AOP实现
 现在有了 SpringBoot 这个神器， 真的越来越简单了。不用像以前那样配置来配置去的，也不用加那么多包，
 直接一个 spring-boot-starter-aop 就搞定。
