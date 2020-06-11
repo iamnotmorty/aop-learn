@@ -67,8 +67,7 @@ pom.xml部分内容如下
     </dependency> 
 </dependencies>           
 ```
-❤ 我比较喜欢用 MyBatis ，虽然有些人说 JAP 更加面向对象，但是我只能说还是喜欢 MyBatis 的简单。
-你用 JAP 写个复杂查询试试，还是很麻烦的。
+这里用 MyBatis ，当然其实可以用 JPA ，因为这里涉及的东西很简单，反倒用 JPA 可以少一些东西，看个人选择吧。
 ### 数据库相关配置
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/dmj_user
@@ -81,7 +80,7 @@ MyBatis 的配置只需要设置一个 xml 文件所在的位置就可以了。
 ```properties
 mybatis.mapper-locations=classpath:mapper/*.xml
 ```
-就这么点配置，无需多想，就这样吧。一开始少纠结，先回用，先把项目跑起来。
+就这么点配置，无需多想，就这样吧。一开始少纠结，先会用，先把项目跑起来。
 ***
 ## 使用Redis实现缓存
 Redis 相关的东西就不在这里多说了。
@@ -135,6 +134,7 @@ public @interface MyCacheable {
 ### 基于 @Aspect 注解的缓存实现
 啥？你问我配置文件的方式怎么实现。不好意思，懒得写也不会，都2020年了，
 springboot 的理念就是约定大于配置，引入包。一个 @Aspect 开干就完了。
+
 好了，开个玩笑，这里的目的就是快速实现自定义缓存注解，赶紧先动起来，成功实现了再说。
 至于 Spring AOP 后面内容会讲，这么讲的原因还是一个理念，先实践，再刨根问底。
 创建一个 Aspect 来处理 @MyCacheable 标记的业务处理类的某个方法。
@@ -217,20 +217,33 @@ Synchronization（同步）、Transactions（事务）
 ### AOP相关名词
 JoinPoint 连接点
 
-关于 JoinPoint 连接点的理解就是，我们可以粗略的把 Java程序 看成是一个个方法的调用。在 JVM 的角度就是每一个方法就是
+> a point during the execution of a program, such as the execution of a method or the handling of an exception. 
+  In Spring AOP, a join point always represents a method execution.
+
+> 程序运行中的一些时间点, 例如一个方法的执行, 或者是一个异常的处理.
+  在 Spring AOP 中, join point 总是表示方法的执行. 
+
+粗略点理解就是，把 Java程序 看成是一个个方法的调用。在 JVM 的角度就是每一个方法就是
 一个栈帧，方法的调用就是栈帧入栈和出栈的过程。从时间角度看就是一个方法调用链条。放在 AOP 的角度，每一个方法调用就是一个
-连接点 JoinPoint ，因此就可以把 Java程序看成是由一个个连接点和一根垂直的时间轴组成的链条。
+连接点 join point ，因此就可以把 Java程序看成是由一个个连接点和一根垂直的时间轴组成的链条。
 
 Aspect 切面
 
-Aspect 切面我们可以理解为，要对某个方法调用时要增加的处理。从空间角度来说就是横切于连接点链条。所以叫做切面。
+Aspect 切面我们可以理解为，指定某个地方要添加的操作（即包含 Pointcut 的定义和 Advice 的定义）。从空间角度来说就是横
+切于连接点链条。所以叫做切面。我们代码中会用到 "@Aspect" 注解，也就认为用 @Aspect 标注的类就是一个切面类。
 
 Pointcut 切点
 
 切面切入的位置就被叫做切点。
 
+从代码层面来说， pointcut 的作用就是提供一组规则(使用 AspectJ pointcut expression language 来描述) 来匹配 join point, 
+给满足规则的 join point 添加 Advice.
+
+`这里再多说两句，join point 和 pointcut 的区别就是，前者是目标，后者是指定目标的规则。`
+
 Advice 增强
 
+由 Aspect 添加到特定的 join point (即满足 pointcut 匹配规则的 join point ) 的一段代码.
 可以在切点位置通过切面对目标方法进行增强处理，增强处理有几种如下：
 
 Before Advice 前置增强
@@ -310,8 +323,10 @@ bean:指定特定的bean名称，可以使用通配符（Spring自带的）
             返回类型        类路径                方法名   参数
 
 > 注：要知道参数的 (\*) 表示一个参数，其他出现 * ，表示所有。"com.example.demo.cao..*." 一般用在类路径，表示cao包和它的子包下的方法
-### Spring AOP
-### AspectJ
+## Spring AOP
+织入 advice 的目标对象. 目标对象也被称为 advised object.
+Spring AOP 使用运行时代理的方式来实现 aspect, 因此 adviced object 总是一个代理对象(proxied object)。
+
 ***
 ## 代理模式
 代理类代理委托类，客户端不直接调用委托类的目标方法，而是通过代理类间接的调用目标方法。
@@ -680,6 +695,8 @@ public class CGLibProxyTest {
     }
 }
 ```
-
 #### Aspect动态代理
+
 #### Instrumentation动态代理
+
+## AspectJ
