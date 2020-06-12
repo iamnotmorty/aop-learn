@@ -202,11 +202,11 @@ public class MyCacheableAspect {
 将设定的 例如 key = "#id" 解析成传入 id 字符串。这个方法没什么难懂的，就是几个类，
 作用都很明显。
 ***
-## AOP的深入研究
-> 在软件业，AOP为Aspect Oriented Programming的缩写，意为：面向切面编程，
->通过预编译方式和运行期间动态代理实现程序功能的统一维护的一种技术。AOP是OOP
->的延续，是软件开发中的一个热点，也是Spring框架中的一个重要内容，是函数式编程
->的一种衍生范型。利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各
+## 深入 AOP
+> 在软件业，AOP 为 Aspect Oriented Programming 的缩写，意为：面向切面编程，
+>通过预编译方式和运行期间动态代理实现程序功能的统一维护的一种技术。AOP 是 OOP
+>的延续，是软件开发中的一个热点，也是 Spring 框架中的一个重要内容，是函数式编程
+>的一种衍生范型。利用 AOP 可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各
 >部分之间的耦合度降低，提高程序的可重用性，同时提高了开发的效率。
 
 ### AOP使用场景
@@ -214,6 +214,8 @@ Authentication（权限）、Caching（缓存）、Context passing（内容传�
 Lazy loading（懒加载）、Debugging（调试）、logging（记录）、tracing（跟踪）、profiling（优化）、
 monitoring（校准）、Performance optimization（性能优化）、Persistence（持久化）、Resource pooling（资源池）、
 Synchronization（同步）、Transactions（事务）
+
+前面我们有已经实现了简单的缓存，以后还会继续拓展。
 ### AOP相关名词
 JoinPoint 连接点
 
