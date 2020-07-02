@@ -497,7 +497,7 @@ public class JDKDynamicProxyTest {
 ```
 下面来看分析
 
-可以看到，我们创建的 Handler 实现了 InvocationHandler 接口并实现了 invoke() 方法。其实在JDK动态代理中，核心是
+可以看到，我们创建的 Handler 实现了 InvocationHandler 接口并实现了 invoke() 方法。在JDK动态代理中，核心是
 InvocationHandler。每一个代理的实例都会有一个关联的调用处理程序(InvocationHandler) ，这个处理程序关联了被代理
 对象。对待代理实例进行调用时，将对方法的调用进行编码并指派到它的调用处理器(InvocationHandler)的invoke方法。所以
 对代理对象实例方法的调用都是通过InvocationHandler中的invoke方法来完成的，而invoke方法会根据传入的代理对象、方法
