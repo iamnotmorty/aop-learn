@@ -1,44 +1,13 @@
-# AOP-Learn
-
-2021/1/4 这个项目当时目的是从自定义缓存注解的角度切入 AOP 的理解和学习，目前来看有所偏离轨道，近期会重新整理。
-今天开始继续维护github
-
-
+# AOP-Learning
 
 👉 Just do it. 
 
-从实践的角度去学习AOP，本项目起始于用AOP实现自定义缓存时的各种思考，由此记录供温习学习使用。
-<!-- TOC -->
+从实践的角度去学习AOP，本项目起始于用AOP实现自定义缓存时的各种思考，由此记录供温习学习使用。本文的切入点时候自定义缓存注解，当然AOP还可以做很多事情，后面会有所提及。
 
-- [AOP-Learn](#aop-learn)
-    - [初始化Springboot项目](#初始化springboot项目)
-        - [数据库相关依赖](#数据库相关依赖)
-        - [数据库相关配置](#数据库相关配置)
-    - [使用Redis实现缓存](#使用redis实现缓存)
-        - [添加依赖](#添加依赖)
-        - [添加配置](#添加配置)
-        - [注解 @EnableCaching](#注解-enablecaching)
-        - [注解 @Cacheable、@CacheEvict](#注解-cacheablecacheevict)
-    - [自定义缓存注解](#自定义缓存注解)
-        - [自定义 @MyCacheable 注解](#自定义-mycacheable-注解)
-        - [基于 @Aspect 注解的缓存实现](#基于-aspect-注解的缓存实现)
-    - [AOP的深入研究](#aop的深入研究)
-        - [AOP使用场景](#aop使用场景)
-        - [AOP相关名词](#aop相关名词)
-        - [AOP实现](#aop实现)
-            - [关键的注解](#关键的注解)
-            - [增强注解的 pointcut 属性](#增强注解的-pointcut-属性)
-        - [Spring AOP](#spring-aop)
-        - [AspectJ](#aspectj)
-    - [代理模式](#代理模式)
-        - [静态代理](#静态代理)
-        - [动态代理](#动态代理)
-            - [JDK动态代理](#jdk动态代理)
-            - [CGLib动态代理](#cglib动态代理)
-            - [Aspect动态代理](#aspect动态代理)
-            - [Instrumentation动态代理](#instrumentation动态代理)
+****
 
-<!-- /TOC -->
+下面是项目代码的详细配置流程
+
 ## 初始化Springboot项目
 🚀 初始化这一步 Idea 直接就可以创建了，添加 web ，Mysql ，MyBatis 依赖，
 这一步可以直接在创建项目的时候就可以勾选，也可以等到项目创建完成后手动添加。
