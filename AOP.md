@@ -18,7 +18,7 @@ Synchronization（同步）、Transactions（事务）
 
 ### AOP相关名词
 
-JoinPoint 连接点
+- JoinPoint 连接点
 
 > a point during the execution of a program, such as the execution of a method or the handling of an exception. 
 > In Spring AOP, a join point always represents a method execution.
@@ -30,12 +30,12 @@ JoinPoint 连接点
 一个栈帧，方法的调用就是栈帧入栈和出栈的过程。从时间角度看就是一个方法调用链条。放在 AOP 的角度，每一个方法调用就是一个
 连接点 join point ，因此就可以把 Java程序看成是由一个个连接点和一根垂直的时间轴组成的链条。
 
-Aspect 切面
+- Aspect 切面
 
 Aspect 切面我们可以理解为，指定某个地方要添加的操作（即包含 Pointcut 的定义和 Advice 的定义）。从空间角度来说就是横
 切于连接点链条。所以叫做切面。我们代码中会用到 "@Aspect" 注解，也就认为用 @Aspect 标注的类就是一个切面类。
 
-Pointcut 切点
+- Pointcut 切点
 
 切面切入的位置就被叫做切点。
 
@@ -44,36 +44,40 @@ Pointcut 切点
 
 `这里再多说两句，join point 和 pointcut 的区别就是，前者是目标，后者是指定目标的规则。`
 
-Advice 增强
+- Advice 增强
 
 由 Aspect 添加到特定的 join point (即满足 pointcut 匹配规则的 join point ) 的一段代码.
 可以在切点位置通过切面对目标方法进行增强处理，增强处理有几种如下：
 
-Before Advice 前置增强
+- Before Advice 前置增强
 
 方法调用前
 
-After Advice 后置增强
+- After Advice 后置增强
 
 方法调用后
 
-Around Advice 环绕增强
+- Around Advice 环绕增强
 
 环绕方法，在方法调用前后
 
-Throws Advice 抛出增强
+- Throws Advice 抛出增强
 
 抛出异常后
 
-Introduction Advice 引入增强
+- Introduction Advice 引入增强
+对某一个类进行增强
 
-Weaving 织入
+- Weaving 织入（对方法的增强）
 
 编译时织入，运行时织入
 
-Introduction 引入
+- Introduction 引入（对类的增强）
 
-持有引用？待求证
+一个类没有实现某接口，想要该类具备某接口的方法。也就可以用引入增强来实现。
+实现引入增强可以将 B b = (B)a;
+可以将没有实现B接口的A类实例强转为B类型;
+即可称为“接口动态实现”
 
 
 ### AOP实现
@@ -101,27 +105,27 @@ Introduction 引入
 
 #### 增强注解的 pointcut 属性
 
-pointcut 属性可以这么多定义方式，前面在自定义注解的时候用到了 @annotation ，也就是我们使用注解的地方。
+- pointcut 属性可以这么多定义方式，前面在自定义注解的时候用到了 @annotation ，也就是我们使用注解的地方。
 
-execution: 匹配连接点
+- execution: 匹配连接点
 
-within: 某个类里面
+- within: 某个类里面
 
-this: 指定AOP代理类的类型
+- this: 指定AOP代理类的类型
 
-target:指定目标对象的类型
+- target:指定目标对象的类型
 
-args: 指定参数的类型
+- args: 指定参数的类型
 
-bean:指定特定的bean名称，可以使用通配符（Spring自带的）
+- bean:指定特定的bean名称，可以使用通配符（Spring自带的）
 
-@target： 带有指定注解的类型
+- @target： 带有指定注解的类型
 
-@args: 指定运行时传的参数带有指定的注解
+- @args: 指定运行时传的参数带有指定的注解
 
-@within: 匹配使用指定注解的类
+- @within: 匹配使用指定注解的类
 
-@annotation:指定方法所应用的注解
+- @annotation:指定方法所应用的注解
 
 我们重点讲一下 execution ，这个相对用的比较多。
 
