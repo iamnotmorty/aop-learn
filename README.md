@@ -4,9 +4,13 @@
 
 从实践的角度去学习AOP，本项目起始于用AOP实现自定义缓存时的各种思考，由此记录供温习学习使用。本文的切入点时候自定义缓存注解，当然AOP还可以做很多事情，后面会有所提及。
 
+
+
+可以直接去看深入AOP的内容 👉 [入口](https://github.com/iamnotmorty/aop-learning/blob/master/AOP.md)
+
 ****
 
-下面是项目代码的详细配置流程
+这里是项目代码的详细配置流程。
 
 ## 初始化Springboot项目
 🚀 初始化这一步 Idea 直接就可以创建了，添加 web ，Mysql ，MyBatis 依赖，
