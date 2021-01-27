@@ -537,8 +537,12 @@ public class CGLibProxyTest {
 }
 ```
 
-#### Aspect动态代理
+
+#### AspectJ动态代理
+基于 Aspectj 实现动态代理（修改目标类的字节，织入代理的字节，在程序编译的时候 插入动态代理的字节码，
+不会生成全新的Class ）
 
 #### Instrumentation动态代理
-
-## AspectJ
+基于instrumentation实现动态代理。修改目标类的字节码、类加载的时候动态拦截去修改，
+基于javaagent实现-javaagent:spring-instrument-4.3.8.RELEASE.jar，类加载的时候插入动态代理的字节码，
+不会生成全新的Class文件。
